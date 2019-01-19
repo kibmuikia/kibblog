@@ -6,10 +6,14 @@
 
 				<v-card>
 					<v-card-title class="">
-						<h5 class="headline" 
-							@click="$router.push('/signup?msg=refreshed')">
-							Sign Up
-						</h5>
+						<v-layout column>
+							<v-flex xs12 md6 class="text-xs-center">
+								<h5 class="headline green--text text--accent-3" 
+									@click="$router.push('/signup?msg=refreshed')">
+									Sign Up
+								</h5>
+							</v-flex>
+						</v-layout>
 					</v-card-title>
 
 				<v-form ref="formSignUp" class="px-3">
@@ -56,7 +60,15 @@
 							<v-flex xs12 md5>
 								<v-btn flat color="error" @click="reset"> Reset </v-btn>
 							</v-flex>
+							<v-flex xs12 md12 class="mt-1 pt-2 text-xs-center grey lighten-3" 
+								v-if="statusMsg">
+								<p class="body-2"> {{ statusMsg }} </p>
+							</v-flex>
 						</v-layout>
+						<!--<br>
+						<v-layout row wrap v-if="statusMsg">
+							
+						</v-layout>-->
 					</v-card-actions>
 
 				</v-form>
@@ -70,6 +82,9 @@
 </template>
 
 <script>
+
+//import db from '@/fb'
+import dbKibblog from '@/fireB'
 	
 export default {
 	data(){
@@ -87,19 +102,23 @@ export default {
 		},// END-reset()
 		submitRegDetails() {
 			if ( this.$refs.formSignUp.validate() ) {
-				this.statusMsg = 'Valid, Submiting & Processing Next';
 				const newuser = {
 					nameFirst: this.fname,
 					nameLast: this.lname,
 					nameUser: this.username,
 					email: this.email
 				}
-				console.log( newuser );
-				alert( this.statusMsg );
+				//console.log( newuser );
+
+				//db.collection( 'projects' ).add( project ).then( () => {
+				dbKibblog.collection( 'users' ).add( newuser ).then( () => {
+					this.statusMsg = 'Successfully added you!';
+					this.$refs.formSignUp.reset();
+				} );
 
 				// ....
 			} else {
-				alert( 'Invalid Details' );
+				this.statusMsg = 'Invalid Details';
 			}
 		},// END-submitRegDetails
 	},// END-methods
