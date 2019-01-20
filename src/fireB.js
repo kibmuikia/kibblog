@@ -1,5 +1,6 @@
 import firebase from 'firebase/app'
 import 'firebase/firestore'
+import 'firebase/storage'
 
 // Initialize Firebase
 var config = {
@@ -14,6 +15,11 @@ firebase.initializeApp(config);
 
 const dbKibblog = firebase.firestore();
 
-dbKibblog.settings( { timestampsInSnapshots: true } );
+const storage = firebase.storage();
+const storageRef = storage.ref();
+const imagesRef = storageRef.child('images');
+const profilePhotosRef = imagesRef.child('profilephotos');
 
-export default dbKibblog;
+//dbKibblog.settings( { timestampsInSnapshots: true } );
+
+export { dbKibblog, profilePhotosRef };// default

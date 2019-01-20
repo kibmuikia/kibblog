@@ -16,7 +16,7 @@
 						</v-layout>
 					</v-card-title>
 
-				<v-form ref="formSignUp" class="px-3">
+				<v-form ref="formSignUp" class="px-3" enctype="multipart/form-data">
 
 					<v-card-text>
 						<v-layout row wrap justify-space-between>
@@ -37,6 +37,7 @@
 								></v-text-field>
 							</v-flex>
 						</v-layout>
+
 						<v-text-field
 							name="username"
 							label="Username"
@@ -44,12 +45,31 @@
 							v-model="username"
 							prepend-icon="person"
 						></v-text-field>
+
 						<v-text-field
 							name="email"
 							label="E-mail Address"
 							id="email"
 							v-model="email"
 						></v-text-field>
+
+						<v-layout column align-center>
+							<v-flex xs12 md6 >
+								<div class="pa-3">
+									<input 
+										type="file" 
+										accept="image/*"
+										name="userAvatar"
+										id="userAvatar"
+									@change="filesChange($event.target.name, $event.target.files[0])"
+									/><!--v-model="userAvatar"-->
+									<span v-if="fileStatus">
+										<p class="body-2 text-xs-center"> {{ fileStatus }} </p>
+									</span>
+								</div>
+							</v-flex>
+						</v-layout>
+
 					</v-card-text>
 
 					<v-card-actions>
@@ -84,7 +104,7 @@
 <script>
 
 //import db from '@/fb'
-import dbKibblog from '@/fireB'
+import { dbKibblog, profilePhotosRef } from '@/fireB'
 	
 export default {
 	data(){
@@ -93,7 +113,9 @@ export default {
 			lname: '',
 			username: '',
 			email: '',
+			userAvatarFile: null,
 			statusMsg: '',
+			fileStatus: '',
 		}
 	},// END-data()
 	methods: {
@@ -112,8 +134,19 @@ export default {
 
 				//db.collection( 'projects' ).add( project ).then( () => {
 				dbKibblog.collection( 'users' ).add( newuser ).then( () => {
-					this.statusMsg = 'Successfully added you!';
-					this.$refs.formSignUp.reset();
+
+					// trying to upload file[image]
+					let userImageRef = profilePhotosRef.child( this.userAvatarFile.name );
+
+					userImageRef.put( this.userAvatarFile ).then( (snapshot) => {
+						//console.log( 'upload good :: ', snapshot );
+						this.$refs.formSignUp.reset();
+						this.userAvatarFile = null;
+						this.statusMsg = 'Successfully added you!';
+						this.fileStatus = 'your choosen image has been uploaded!'
+					} );
+					// end
+					
 				} );
 
 				// ....
@@ -121,6 +154,13 @@ export default {
 				this.statusMsg = 'Invalid Details';
 			}
 		},// END-submitRegDetails
+		filesChange( fieldName, file ) {
+			this.userAvatarFile = file
+			//console.log( this.userAvatarFile );
+
+			let jinaYaFile = this.userAvatarFile.name;
+			this.fileStatus = `name of file[ ${jinaYaFile} ]`;
+		},// END-filesChange
 	},// END-methods
 }// END-export
 
