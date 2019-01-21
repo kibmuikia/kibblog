@@ -75,7 +75,9 @@
 					<v-card-actions>
 						<v-layout row wrap justify-space-between>
 							<v-flex xs12 md5>
-								<v-btn flat color="success" @click="submitRegDetails"> Submit Details </v-btn>
+								<v-btn flat color="success" 
+									@click="submitRegDetails"
+									:loading="loadFlag"> Submit Details </v-btn>
 							</v-flex>
 							<v-flex xs12 md5>
 								<v-btn flat color="error" @click="reset"> Reset </v-btn>
@@ -116,6 +118,7 @@ export default {
 			userAvatarFile: null,
 			statusMsg: '',
 			fileStatus: '',
+			loadFlag: false,
 		}
 	},// END-data()
 	methods: {
@@ -124,6 +127,8 @@ export default {
 		},// END-reset()
 		submitRegDetails() {
 			if ( this.$refs.formSignUp.validate() ) {
+				this.loadFlag = true;
+
 				const newuser = {
 					nameFirst: this.fname,
 					nameLast: this.lname,
@@ -136,10 +141,19 @@ export default {
 				dbKibblog.collection( 'users' ).add( newuser ).then( () => {
 
 					// trying to upload file[image]
-					let userImageRef = profilePhotosRef.child( this.userAvatarFile.name );
+					let originalFileName = this.userAvatarFile.name;
+					let originalFileNameSplit = originalFileName.split( '.' );
+					let partOne = originalFileNameSplit[0];
+					let partTwo = originalFileNameSplit[1];
+					partOne = partOne.substring( 0,5 );
+					let toUse = this.username.concat( '__',partOne,'.',partTwo );
+					this.fileStatus = toUse;
+
+					let userImageRef = profilePhotosRef.child( toUse );
 
 					userImageRef.put( this.userAvatarFile ).then( (snapshot) => {
 						//console.log( 'upload good :: ', snapshot );
+						this.loadFlag = false;
 						this.$refs.formSignUp.reset();
 						this.userAvatarFile = null;
 						this.statusMsg = 'Successfully added you!';
@@ -159,7 +173,8 @@ export default {
 			//console.log( this.userAvatarFile );
 
 			let jinaYaFile = this.userAvatarFile.name;
-			this.fileStatus = `name of file[ ${jinaYaFile} ]`;
+			let jinaSplit = jinaYaFile.split( '.' );
+			this.fileStatus = `name of file[ ${jinaYaFile} ] .. ${jinaSplit[0]} .. ${jinaSplit[1]}`;
 		},// END-filesChange
 	},// END-methods
 }// END-export
