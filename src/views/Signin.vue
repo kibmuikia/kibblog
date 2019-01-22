@@ -73,17 +73,27 @@ export default {
 		signin() {
 			if( this.$refs.formSignin.validate() ) {
 				this.loadflag = true;
-				this.statusmsg = 'valid, processing now!'
+
 				// dbKibblog.collection( 'users' ).add( newuser ).then( (docRef) => {
-				dbKibblog.collection( 'users' ).where( 'nameUser', '==', this.username ).get().then( (res) => {
-					this.statusmsg = 'now in callback function[.then()]';
-					console.log( res );
-					this.loadflag = false;
+				dbKibblog.collection( 'users' ).where( 'nameUser', '==', this.username ).get().then( (snapshot) => {
+					
+					if( snapshot.docs.exists ){
+						snapshot.docs.forEach( doc => {
+							this.statusmsg = `FOUND document with, user[ ${doc.data().nameUser} ]`;
+							//console.log( doc.data() );
+							this.loadflag = false;
+							this.$refs.formSignin.reset();
+						} );
+					} else {
+						this.statusmsg = 'No such document';
+						this.loadflag = false;
+						//this.$refs.formSignin.reset();
+					}// end-if
 
 					// ......
 				} ).catch( (error) => {
-					this.statusmsg = 'Error occurred!';
-					console.log( error );
+					this.statusmsg = `Error occurred! :: ${error}`;
+					//console.log( error );
 
 					// .....
 				} );
