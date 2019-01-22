@@ -39,6 +39,13 @@
 						</v-layout>
 
 						<v-text-field
+							name="email"
+							label="E-mail Address"
+							id="email"
+							v-model="email"
+						></v-text-field>
+
+						<v-text-field
 							name="username"
 							label="Username"
 							id="username"
@@ -47,10 +54,12 @@
 						></v-text-field>
 
 						<v-text-field
-							name="email"
-							label="E-mail Address"
-							id="email"
-							v-model="email"
+							name="password"
+							label="Password"
+							id="password"
+							v-model="password"
+							prepend-icon="lock"
+							type="password"
 						></v-text-field>
 
 						<v-layout column align-center>
@@ -63,7 +72,7 @@
 										id="userAvatar"
 									@change="filesChange($event.target.name, $event.target.files[0])"
 									/><!--v-model="userAvatar"-->
-									<span v-if="fileStatus">
+									<span v-if="fileStatus" class="pa-2">
 										<p class="body-2 text-xs-center"> {{ fileStatus }} </p>
 									</span>
 								</div>
@@ -113,12 +122,13 @@ export default {
 		return {
 			fname: '',
 			lname: '',
-			username: '',
 			email: '',
+			username: '',
+			password: '',
 			userAvatarFile: null,
 			statusMsg: '',
 			fileStatus: '',
-			loadFlag: false,
+			loadFlag: false
 		}
 	},// END-data()
 	methods: {
@@ -133,12 +143,16 @@ export default {
 					nameFirst: this.fname,
 					nameLast: this.lname,
 					nameUser: this.username,
-					email: this.email
+					email: this.email,
+					password: this.password
 				}
 				//console.log( newuser );
 
 				//db.collection( 'projects' ).add( project ).then( () => {
-				dbKibblog.collection( 'users' ).add( newuser ).then( () => {
+				dbKibblog.collection( 'users' ).add( newuser ).then( (docRef) => {
+
+					// console.log("Document written with ID: ", docRef.id);
+					var docId = docRef.id;
 
 					// trying to upload file[image]
 					let originalFileName = this.userAvatarFile.name;
@@ -151,12 +165,12 @@ export default {
 
 					let userImageRef = profilePhotosRef.child( toUse );
 
-					userImageRef.put( this.userAvatarFile ).then( (snapshot) => {
-						//console.log( 'upload good :: ', snapshot );
+					userImageRef.put( this.userAvatarFile ).then( () => {// snapshot
+						//console.log( 'upload good :: ',  );
 						this.loadFlag = false;
 						this.$refs.formSignUp.reset();
 						this.userAvatarFile = null;
-						this.statusMsg = 'Successfully added you!';
+						this.statusMsg = `Successfully added you![ ${docId} ]`;
 						this.fileStatus = 'your choosen image has been uploaded!'
 					} );
 					// end
