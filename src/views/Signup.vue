@@ -83,12 +83,12 @@
 
 					<v-card-actions>
 						<v-layout row wrap justify-space-between>
-							<v-flex xs12 md5>
+							<v-flex xs12 sm5 md5>
 								<v-btn flat color="success" 
 									@click="submitRegDetails"
 									:loading="loadFlag"> Submit Details </v-btn>
 							</v-flex>
-							<v-flex xs12 md5>
+							<v-flex xs12 sm5 md5>
 								<v-btn flat color="error" @click="reset"> Reset </v-btn>
 							</v-flex>
 							<v-flex xs12 md12 class="mt-1 pt-2 text-xs-center grey lighten-3" 
@@ -149,12 +149,16 @@ export default {
 				//console.log( newuser );
 
 				//db.collection( 'projects' ).add( project ).then( () => {
-				dbKibblog.collection( 'users' ).add( newuser ).then( (docRef) => {
+				dbKibblog.collection( 'users' ) //.doc( this.username )
+					.add( newuser )
+					.then( (docRef) => { //docRef
 
 					// console.log("Document written with ID: ", docRef.id);
 					var docId = docRef.id;
 
-					// trying to upload file[image]
+					this.statusmsg = 'Next: uploading your image';
+
+					// upload file[image] logic
 					let originalFileName = this.userAvatarFile.name;
 					let originalFileNameSplit = originalFileName.split( '.' );
 					let partOne = originalFileNameSplit[0];
@@ -165,12 +169,11 @@ export default {
 
 					let userImageRef = profilePhotosRef.child( toUse );
 
-					userImageRef.put( this.userAvatarFile ).then( () => {// snapshot
-						//console.log( 'upload good :: ',  );
+					userImageRef.put( this.userAvatarFile ).then( () => {
 						this.loadFlag = false;
 						this.$refs.formSignUp.reset();
 						this.userAvatarFile = null;
-						this.statusMsg = `Successfully added you![ ${docId} ]`;
+						this.statusMsg = `Successfully added you! [ ${docId} ]`;//[ ${docId} ]
 						this.fileStatus = 'your choosen image has been uploaded!'
 					} );
 					// end

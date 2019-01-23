@@ -54,7 +54,7 @@
 
 <script>
 
-import { dbKibblog, profilePhotosRef } from '@/fireB'
+import { dbKibblog } from '@/fireB'
 	
 export default {
 	
@@ -74,7 +74,26 @@ export default {
 			if( this.$refs.formSignin.validate() ) {
 				this.loadflag = true;
 
-				// dbKibblog.collection( 'users' ).add( newuser ).then( (docRef) => {
+				let docRef = dbKibblog.collection('users');
+				docRef.where( 'nameUser','==',this.username )
+					.get()
+					.then( (querySnapshot) => {
+						if( querySnapshot.empty ){
+							this.statusmsg = 'Empty!!';
+							this.loadflag = false;
+						} else{
+							querySnapshot.docs.forEach( doc => {
+								//console.log( doc.data() );
+								this.statusmsg = `FOUND document with, user[ ${doc.data().nameUser} ]`;
+								this.loadflag = false;
+							} );
+						}//...
+					} )
+					.catch( (error) => {
+						this.statusmsg = error;
+						this.loadflag = false;
+					} );
+				/*
 				dbKibblog.collection( 'users' ).where( 'nameUser', '==', this.username ).get().then( (snapshot) => {
 					
 					if( snapshot.docs.exists ){
@@ -91,12 +110,8 @@ export default {
 					}// end-if
 
 					// ......
-				} ).catch( (error) => {
-					this.statusmsg = `Error occurred! :: ${error}`;
-					//console.log( error );
-
-					// .....
-				} );
+				} )
+				*/
 				// .....
 			} else {
 				this.statusmsg = 'Invalid Details'
