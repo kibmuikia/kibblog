@@ -4,7 +4,7 @@ import 'firebase/storage'
 
 // Initialize Firebase
 /*var config = {
-	apiKey: "AIzaSyD8oFzWPzvfit-7T5VgswK1GdMU9QG8JEU",
+	apiKey: "",
 	authDomain: "kibblog-f8bac.firebaseapp.com",
 	databaseURL: "https://kibblog-f8bac.firebaseio.com",
 	projectId: "kibblog-f8bac",
@@ -14,7 +14,7 @@ import 'firebase/storage'
 firebase.initializeApp(config);*/
 
 var config = {
-	apiKey: "AIzaSyD8oFzWPzvfit-7T5VgswK1GdMU9QG8JEU",
+	apiKey: "",
 	authDomain: "kibblog-f8bac.firebaseapp.com",
 	databaseURL: "https://kibblog-f8bac.firebaseio.com",
 	projectId: "kibblog-f8bac",
